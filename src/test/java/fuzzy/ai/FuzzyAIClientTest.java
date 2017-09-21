@@ -23,15 +23,12 @@ public class FuzzyAIClientTest {
 		Evaluation evaluation = client.evaluate(AGENT_ID, true, inputMap);
 		
 		String evaluationId = evaluation.getId();
-		System.out.println(evaluationId);
 		Assert.assertNotNull(evaluationId);
 
 		Map<String, Double> evaluationMap = evaluation.getMap();
-		System.out.println(evaluationMap);
 		Assert.assertNotNull(evaluationMap);
 
 		Double pricePerCup = evaluationMap.get("Price per cup");
-		System.out.println(pricePerCup);
 		Assert.assertNotNull(pricePerCup);
 	}
 
@@ -45,41 +42,32 @@ public class FuzzyAIClientTest {
 		Evaluation evaluation = new FuzzyAIClient(API_KEY).evaluate(AGENT_ID, true, inputMap);
 
 		String evaluationId = evaluation.getId();
-		System.out.println(evaluationId);
 		Assert.assertNotNull(evaluationId);
 
 		Map<String, Double> evaluationMap = evaluation.getMap();
-		System.out.println(evaluationMap);
 		Assert.assertNotNull(evaluationMap);
 
 		Double pricePerCup = evaluationMap.get("Price per cup");
-		System.out.println(pricePerCup);
 		Assert.assertNotNull(pricePerCup);
 		
 		Map<String, Double> metricMap = new HashMap<>();
 		metricMap.put("Price per cup", 6.0);
 		
 		Feedback feedback = client.feedback(evaluationId, metricMap);
-		System.out.println(feedback);
 		
 		String feedbackStatus = feedback.getStatus();
-		System.out.println(feedbackStatus);
 		Assert.assertEquals("OK", feedbackStatus);
 		
 		Map<String, Double> feedbackMap = feedback.getMap();
-		System.out.println(feedbackMap);
 		Assert.assertNotNull(feedbackMap);
 		
 		String feedbackEvaluationLog = feedback.getEvaluationLog();
-		System.out.println(feedbackEvaluationLog);
 		Assert.assertNotNull(feedbackEvaluationLog);
 		
 		ZonedDateTime createdDateTime = feedback.getCreatedDateTime();
-		System.out.println(createdDateTime);
 		Assert.assertNotNull(createdDateTime);
 		
 		String id = feedback.getId();
-		System.out.println(id);
 		Assert.assertNotNull(id);
 	}
 }
