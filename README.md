@@ -24,25 +24,25 @@ This gem handles the most basic usage of Fuzzy.ai.
 import fuzzy.ai.FuzzyAIClient.java
 ```
 
-# Your API key (get one from https://fuzzy.io/)
+### Your API key (get one from https://fuzzy.io/)
 
 ```java
 private static final String API_KEY = "YOUR_API_KEY_HERE"
 ```
 
-# Create a client
+### Create a client
 
 ```java
 FuzzyAIClient client = new FuzzyAIClient(API_KEY)
 ```
 
-# ID of the agent you want to call; get it from https://fuzzy.ai/
+### ID of the agent you want to call; get it from https://fuzzy.ai/
 
 ```java
 private static final String AGENT_ID = "YOUR_AGENT_ID_HERE";
 ```
 
-# Inputs; map of string or symbol to numbers
+### Inputs; map of string or symbol to numbers
 
 ```java
 Map<String, Integer> inputMap = new HashMap<>();
@@ -50,25 +50,25 @@ inputMap.put("input1", 10);
 inputMap.put("input2", 30);
 ```
 
-# Ask the agent to evaluate the inputs; returns two values!
+### Ask the agent to evaluate the inputs; returns two values!
 
 ```java
 Evaluation evaluation = client.evaluate(AGENT_ID, true, inputMap);
 ```
 
-# Evaluation contains all the outputs
+### Evaluation contains all the outputs
 
 ```java
 System.out.println(evaluation.getMap().get("output1"));
 ```
 
-# An opaque ID for the evaluation
+### An opaque ID for the evaluation
 
 ```java
 System.out.println(evaluation.getId());
 ```
 
-# For feedback, provide a performance metric
+### For feedback, provide a performance metric
 
 ```java
 Map<String, Double> metricMap = new HashMap<>();
