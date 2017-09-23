@@ -5,7 +5,6 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ public class FuzzyAIClientTest {
 	private static final String AGENT_ID = "test-agent-id";
 	
 	@Test
-	public void testEvaluate() throws ClientProtocolException, IOException {
+	public void testEvaluate() throws IOException {
 		FuzzyAIClient client = new FuzzyAIClient(API_KEY);
 		
 		Map<String, Integer> inputMap = new HashMap<>();

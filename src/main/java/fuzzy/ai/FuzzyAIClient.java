@@ -1,48 +1,42 @@
 package fuzzy.ai;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 
 public class FuzzyAIClient {
 	private static final String root = "https://api.fuzzy.ai";	
 	private static final String version = "0.0.1";
 	
-	private final ObjectMapper mapper;
 	private final Client client;
 	private final String key;
 	
 	public FuzzyAIClient(String key) {
 		this.key = key;
+		this.client = ClientBuilder.newClient();
 		
-		mapper = new ObjectMapper();
-		
-		ClientConfig config = new DefaultClientConfig();
-		config.getSingletons().add(new JacksonJsonProvider(mapper));
-		
-		this.client = Client.create(config);
-		client.addFilter(new LoggingFilter(System.out));
+		// Enable this to log requests
+		client.register(new LoggingFeature(Logger.getGlobal(), Level.INFO, null, null));
 	}
 	
 	public Evaluation evaluate(String agentId, boolean meta, Map<String, Integer> inputMap) {
 		String url = root + "/agent/" + agentId;
 
-		WebResource webResource = client.resource(url);
+		WebTarget webTarget = client.target(url);
 
-		Builder builder = webResource
-				.type(MediaType.APPLICATION_JSON)
+		Invocation.Builder builder = webTarget
+				.request(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + key)
 				.header("User-Agent", "fuzzy.ai-java/" + version);
@@ -50,17 +44,17 @@ public class FuzzyAIClient {
 		if (meta)
 			builder.header("meta", "true");
 		
-		ClientResponse response = builder.post(ClientResponse.class, inputMap);
+		Response response = builder.post(Entity.json(inputMap));
 
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus());
 		}
 		
-		String evaluationId = response.getHeaders().getFirst("X-Evaluation-ID");
+		String evaluationId = response.getHeaderString("X-Evaluation-ID");
 		
 		@SuppressWarnings("unchecked")
-		Map<String, Double> map = response.getEntity(Map.class);
+		Map<String, Double> map = response.readEntity(Map.class);
 		
 		return new Evaluation(evaluationId, map);
 	}
@@ -68,14 +62,14 @@ public class FuzzyAIClient {
 	public Feedback feedback(String evaluationId, Map<String, Double> metricMap) {
 		String url = root + "/evaluation/" + evaluationId + "/feedback";
 
-		WebResource webResource = client.resource(url);
+		WebTarget webTarget = client.target(url);
 
-		ClientResponse response = webResource
-				.type(MediaType.APPLICATION_JSON)
+		Response response = webTarget
+				.request(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + key)
 				.header("User-Agent", "fuzzy.ai-java/" + version)
-				.post(ClientResponse.class, metricMap);
+				.post(Entity.json(metricMap));
 
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
@@ -83,25 +77,18 @@ public class FuzzyAIClient {
 		}
 
 		@SuppressWarnings("unchecked")
-		Map<String, String> responseMap = response.getEntity(Map.class);
+		Map<String, Object> responseMap = response.readEntity(Map.class);
 		
-		String id = responseMap.get("id");
+		String id = (String) responseMap.get("id");
 		
-		String status = responseMap.get("status");
+		String status = (String) responseMap.get("status");
 		
-		ZonedDateTime dateTime = ZonedDateTime.parse(responseMap.get("createdAt"));
+		ZonedDateTime dateTime = ZonedDateTime.parse((String) responseMap.get("createdAt"));
 		
-		String data = responseMap.get("data");
-		Map<String, Double> map;
-		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Double> m = mapper.readValue(data, Map.class);
-			map = m;
-		} catch (IOException e) {
-			throw new RuntimeException("Failed : Data : " + data);
-		}
+		@SuppressWarnings("unchecked")
+		Map<String, Double> map = (Map<String, Double>) responseMap.get("data");
 		
-		String log = responseMap.get("evaluationLog");
+		String log = (String) responseMap.get("evaluationLog");
 				
 		return new Feedback(id, status, dateTime, map, log);
 	}
