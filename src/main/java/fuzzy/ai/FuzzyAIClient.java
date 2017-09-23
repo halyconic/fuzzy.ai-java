@@ -2,8 +2,6 @@ package fuzzy.ai;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -12,8 +10,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.glassfish.jersey.logging.LoggingFeature;
 
 public class FuzzyAIClient {
 	private static final String root = "https://api.fuzzy.ai";	
@@ -27,7 +23,7 @@ public class FuzzyAIClient {
 		this.client = ClientBuilder.newClient();
 		
 		// Enable this to log requests
-		client.register(new LoggingFeature(Logger.getGlobal(), Level.INFO, null, null));
+		// client.register(new LoggingFeature(Logger.getGlobal(), Level.INFO, null, null));
 	}
 	
 	public Evaluation evaluate(String agentId, boolean meta, Map<String, Integer> inputMap) {
