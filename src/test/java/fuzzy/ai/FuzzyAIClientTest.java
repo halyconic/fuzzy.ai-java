@@ -1,7 +1,6 @@
 package fuzzy.ai;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,14 +20,9 @@ public class FuzzyAIClientTest {
 		
 		Evaluation evaluation = client.evaluate(AGENT_ID, true, inputMap);
 		
-		String evaluationId = evaluation.getId();
-		Assert.assertNotNull(evaluationId);
-
-		Map<String, Double> evaluationMap = evaluation.getMap();
-		Assert.assertNotNull(evaluationMap);
-
-		Double pricePerCup = evaluationMap.get("Price per cup");
-		Assert.assertNotNull(pricePerCup);
+		Assert.assertNotNull(evaluation.getId());
+		Assert.assertNotNull(evaluation.getMap());
+		Assert.assertNotNull(evaluation.getMap().get("Price per cup"));
 	}
 
 	@Test
@@ -40,33 +34,19 @@ public class FuzzyAIClientTest {
 		
 		Evaluation evaluation = new FuzzyAIClient(API_KEY).evaluate(AGENT_ID, true, inputMap);
 
-		String evaluationId = evaluation.getId();
-		Assert.assertNotNull(evaluationId);
-
-		Map<String, Double> evaluationMap = evaluation.getMap();
-		Assert.assertNotNull(evaluationMap);
-
-		Double pricePerCup = evaluationMap.get("Price per cup");
-		Assert.assertNotNull(pricePerCup);
+		Assert.assertNotNull(evaluation.getId());
+		Assert.assertNotNull(evaluation.getMap());
+		Assert.assertNotNull(evaluation.getMap().get("Price per cup"));
 		
 		Map<String, Double> metricMap = new HashMap<>();
 		metricMap.put("Price per cup", 6.0);
 		
-		Feedback feedback = client.feedback(evaluationId, metricMap);
+		Feedback feedback = client.feedback(evaluation.getId(), metricMap);
 		
-		String feedbackStatus = feedback.getStatus();
-		Assert.assertEquals("OK", feedbackStatus);
-		
-		Map<String, Double> feedbackMap = feedback.getMap();
-		Assert.assertNotNull(feedbackMap);
-		
-		String feedbackEvaluationLog = feedback.getEvaluationLog();
-		Assert.assertNotNull(feedbackEvaluationLog);
-		
-		ZonedDateTime createdDateTime = feedback.getCreatedDateTime();
-		Assert.assertNotNull(createdDateTime);
-		
-		String id = feedback.getId();
-		Assert.assertNotNull(id);
+		Assert.assertEquals("OK", feedback.getStatus());
+		Assert.assertNotNull(feedback.getMap());
+		Assert.assertNotNull(feedback.getEvaluationLog());
+		Assert.assertNotNull(feedback.getCreatedDateTime());
+		Assert.assertNotNull(feedback.getId());
 	}
 }

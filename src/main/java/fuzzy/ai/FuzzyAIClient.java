@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 public class FuzzyAIClient {
 	private static final String root = "https://api.fuzzy.ai";	
-	private static final String version = "0.0.1";
+	private static final String version = "0.1.0";
 	
 	private final Client client;
 	private final String key;
@@ -27,18 +27,19 @@ public class FuzzyAIClient {
 	}
 	
 	public Evaluation evaluate(String agentId, boolean meta, Map<String, Integer> inputMap) {
-		String url = root + "/agent/" + agentId;
+		String url = String.format("%1$s/agent/%2$s", root, agentId);
 
 		WebTarget webTarget = client.target(url);
 
 		Invocation.Builder builder = webTarget
 				.request(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "Bearer " + key)
+				.header("Authorization", String.format("Bearer %s", key))
 				.header("User-Agent", "fuzzy.ai-java/" + version);
 		
-		if (meta)
+		if (meta) {
 			builder.header("meta", "true");
+		}
 		
 		Response response = builder.post(Entity.json(inputMap));
 
@@ -56,8 +57,8 @@ public class FuzzyAIClient {
 	}
 	
 	public Feedback feedback(String evaluationId, Map<String, Double> metricMap) {
-		String url = root + "/evaluation/" + evaluationId + "/feedback";
-
+		String url = String.format("%1$s/evaluation/%2$s/feedback", root, evaluationId);
+		
 		WebTarget webTarget = client.target(url);
 
 		Response response = webTarget

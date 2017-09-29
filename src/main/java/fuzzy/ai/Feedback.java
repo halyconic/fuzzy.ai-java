@@ -4,11 +4,11 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 
 public class Feedback {
-	public String id;
-	public String status;
-	public ZonedDateTime createdDateTime;
-	public Map<String, Double> map;
-	public String evaluationLog;
+	private String id;
+	private String status;
+	private ZonedDateTime createdDateTime;
+	private Map<String, Double> map;
+	private String evaluationLog;
 	
 	public Feedback(String id, String status, ZonedDateTime createdDateTime, Map<String, Double> map,
 			String evaluationLog) {
